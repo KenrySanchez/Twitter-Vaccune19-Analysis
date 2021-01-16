@@ -1,4 +1,4 @@
-package com.alecspopa.storm;
+package com.twitter.analysis;
 
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -57,18 +57,26 @@ public class SentimentAnalysisBolt extends BaseRichBolt {
         }
         
         if (DictionaryWords.POSITIVE_WORDS.contains(word)) {
+        	
         	sentimentScore += 1;
+        	
         } else if (DictionaryWords.NEGATIVE_WORDS.contains(word)) {
+        	
         	sentimentScore -= 1;
+        	
         }
         
         sentimentScoreCounter.put(mention, sentimentScore);
 
         long now = System.currentTimeMillis();
         long logPeriodSec = (now - lastLogTime) / 1000;
+        
+        System.out.println("alberto");
+        
         if (logPeriodSec > logIntervalSec) {
         	System.out.println("\n\n");
             publishList();
+            System.out.println("kenry");
             lastLogTime = now;
         }
     }

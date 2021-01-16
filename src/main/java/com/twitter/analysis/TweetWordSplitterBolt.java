@@ -1,4 +1,4 @@
-package com.alecspopa.storm;
+package com.twitter.analysis;
 
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;

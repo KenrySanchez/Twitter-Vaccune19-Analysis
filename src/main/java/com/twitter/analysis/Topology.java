@@ -1,4 +1,4 @@
-package com.alecspopa.storm;
+package com.twitter.analysis;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -15,7 +15,7 @@ import backtype.storm.topology.TopologyBuilder;
  */
 public class Topology {
 
-	static final String TOPOLOGY_NAME = "apache-storm-twitter-sentiment-analysis";
+	static final String TOPOLOGY_NAME = "twitter-vaccune19-analysis";
 
 	public static void main(String[] args) {
 		Set<String> languages = new HashSet<String>(Arrays.asList(new String[] {"en"}));
@@ -30,7 +30,9 @@ public class Topology {
 		config.setMessageTimeoutSecs(120);
 
 		TopologyBuilder b = new TopologyBuilder();
+		
 		b.setSpout("TwitterSampleSpout", new TwitterSampleSpout());
+		
         b.setBolt("MentionBolt", new MentionBolt(languages, hashtags, mentions)).shuffleGrouping("TwitterSampleSpout");
         b.setBolt("TweetWordSplitterBolt", new TweetWordSplitterBolt(3)).shuffleGrouping("MentionBolt");
         b.setBolt("SentimentAnalysisBolt", new SentimentAnalysisBolt(10, 10 * 60)).shuffleGrouping("TweetWordSplitterBolt");

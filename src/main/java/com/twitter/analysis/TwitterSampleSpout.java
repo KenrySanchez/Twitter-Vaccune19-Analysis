@@ -1,4 +1,4 @@
-package com.alecspopa.storm;
+package com.twitter.analysis;
 
 import backtype.storm.Config;
 import backtype.storm.spout.SpoutOutputCollector;
@@ -59,6 +59,13 @@ public class TwitterSampleSpout extends BaseRichSpout {
 		twitterStream = factory.getInstance();
 		twitterStream.addListener(listener);
 		twitterStream.sample();
+		
+		try {
+			System.out.println("kenry " + twitterStream.getOAuthAccessToken().toString());
+		} catch (TwitterException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
 	@Override

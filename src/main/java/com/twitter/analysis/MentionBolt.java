@@ -1,4 +1,4 @@
-package com.alecspopa.storm;
+package com.twitter.analysis;
 
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -42,6 +42,7 @@ public class MentionBolt extends BaseRichBolt {
     public void execute(Tuple input) {
         Status tweet = (Status) input.getValueByField("tweet");
         String lang = tweet.getUser().getLang();
+        
         String text = tweet.getText().replaceAll("\\p{Punct}", " ").replaceAll("\\r|\\n", "").toLowerCase();
         
         if (!this.languages.contains(lang)) {

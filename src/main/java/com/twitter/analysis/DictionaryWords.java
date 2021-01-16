@@ -1,4 +1,4 @@
-package com.alecspopa.storm;
+package com.twitter.analysis;
 
 import java.util.Arrays;
 import java.util.HashSet;

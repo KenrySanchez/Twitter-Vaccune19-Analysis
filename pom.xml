@@ -1,12 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.alecspopa</groupId>
-  <artifactId>apache-storm-twitter-sentiment-analysis</artifactId>
+  <groupId>com.twitter.analysis</groupId>
+  <artifactId>TwitterVaccune19Analysis</artifactId>
   <packaging>jar</packaging>
-  <version>0.1</version>
-  <name>Apache Storm Twitter Naive Sentiment Analysis</name>
-  <url>http://alecspopa.com</url>
+  <version>0.1.0</version>
 
   <dependencies>
     <dependency>
@@ -63,7 +61,7 @@
 	    <artifactId>exec-maven-plugin</artifactId>
 	    <version>1.2.1</version>
 	    <configuration>
-	      <mainClass>com.alecspopa.storm.Topology</mainClass>
+	      <mainClass>com.twitter.analysis.Topology</mainClass>
 	  	  <classpathScope>compile</classpathScope>
 	    </configuration>
 	  </plugin>
@@ -84,7 +82,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>com.alecspopa.storm.Topology</mainClass>
+              <mainClass>com.twitter.analysis.Topology</mainClass>
             </manifest>
           </archive>
         </configuration>
