@@ -1,5 +1,9 @@
 package com.twitter.analysis;
 
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import backtype.storm.Config;
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -8,20 +12,29 @@ import backtype.storm.topology.base.BaseRichSpout;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
-import twitter4j.*;
+import twitter4j.FilterQuery;
+import twitter4j.Query;
+import twitter4j.StallWarning;
+import twitter4j.Status;
+import twitter4j.StatusDeletionNotice;
+import twitter4j.StatusListener;
+import twitter4j.TwitterStream;
+import twitter4j.TwitterStreamFactory;
 
-import java.util.Map;
-import java.util.concurrent.LinkedBlockingQueue;
-
-/**
- * Reads Twitter's sample feed using the twitter4j library.
- */
 @SuppressWarnings({ "rawtypes", "serial" })
-public class TwitterSampleSpout extends BaseRichSpout {
+public class TwitterSpout extends BaseRichSpout {
+
+	/**
+	 * PRIVATE ATTRIBUTES
+	 */
 
 	private SpoutOutputCollector collector;
 	private LinkedBlockingQueue<Status> queue;
 	private TwitterStream twitterStream;
+
+	/**
+	 * SPOUT OVERRIDE METHODS
+	 */
 
 	@Override
 	public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
@@ -55,22 +68,23 @@ public class TwitterSampleSpout extends BaseRichSpout {
 			}
 		};
 
+		// Twitter Stream configuration
 		TwitterStreamFactory factory = new TwitterStreamFactory();
-		twitterStream = factory.getInstance();
-		twitterStream.addListener(listener);
-		twitterStream.sample();
 		
-		try {
-			System.out.println("kenry " + twitterStream.getOAuthAccessToken().toString());
-		} catch (TwitterException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		twitterStream = factory.getInstance();
+		
+		FilterQuery query = new FilterQuery();
+		query.track(new String[]{ "#COVID19", "#Vaccine", "#COVIDVaccine" });
+		query.language(new String[] {"en"});
+		
+		twitterStream.addListener(listener);
+		twitterStream.filter(query);
 	}
 
 	@Override
 	public void nextTuple() {
 		Status ret = queue.poll();
+
 		if (ret == null) {
 			Utils.sleep(50);
 		} else {
@@ -86,6 +100,8 @@ public class TwitterSampleSpout extends BaseRichSpout {
 	@Override
 	public Map<String, Object> getComponentConfiguration() {
 		Config ret = new Config();
+
+		// Used for local mode - TODO: Optimize
 		ret.setMaxTaskParallelism(1);
 		return ret;
 	}
@@ -100,7 +116,7 @@ public class TwitterSampleSpout extends BaseRichSpout {
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("tweet"));
+		declarer.declare(new Fields(Utilities.TWITTER_LIST_FIELD));
 	}
 
 }
