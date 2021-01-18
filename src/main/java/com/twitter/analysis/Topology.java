@@ -1,53 +1,61 @@
 package com.twitter.analysis;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+
+import org.apache.commons.io.IOUtils;
+
+import com.google.common.io.ByteStreams;
+import com.google.common.io.CharStreams;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.topology.TopologyBuilder;
+import backtype.storm.tuple.Fields;
 
-/**
- * Topology class that sets up the Storm topology for this sample.
- * Please note that Twitter credentials have to be provided as VM args, otherwise you'll get an Unauthorized error.
- * @link http://twitter4j.org/en/configuration.html#systempropertyconfiguration
- */
 public class Topology {
 
-	static final String TOPOLOGY_NAME = "twitter-vaccune19-analysis";
+  static final String TOPOLOGY_NAME = "twitter-vaccune19-analysis";
 
-	public static void main(String[] args) {
-		Set<String> languages = new HashSet<String>(Arrays.asList(new String[] {"en"}));
-		Set<String> hashtags = new HashSet<String>(Arrays.asList(new String[] {
-				"brexit", "barackobama", "hillaryclinton", "donaldtrump"
-		}));
-		Set<String> mentions = new HashSet<String>(Arrays.asList(new String[] {
-				"barackobama", "hillaryclinton", "realdonaldtrump"
-		}));
-		
-		Config config = new Config();
-		config.setMessageTimeoutSecs(120);
+  public static void main(String[] args) throws IOException {
 
-		TopologyBuilder b = new TopologyBuilder();
-		
-		b.setSpout("TwitterSampleSpout", new TwitterSampleSpout());
-		
-        b.setBolt("MentionBolt", new MentionBolt(languages, hashtags, mentions)).shuffleGrouping("TwitterSampleSpout");
-        b.setBolt("TweetWordSplitterBolt", new TweetWordSplitterBolt(3)).shuffleGrouping("MentionBolt");
-        b.setBolt("SentimentAnalysisBolt", new SentimentAnalysisBolt(10, 10 * 60)).shuffleGrouping("TweetWordSplitterBolt");
+    // Set config message. TODO: Look for improviment
+    Config config = new Config();
+    config.setMessageTimeoutSecs(120);
 
-		final LocalCluster cluster = new LocalCluster();
-		cluster.submitTopology(TOPOLOGY_NAME, config, b.createTopology());
+    // Build Storm Topology
+    TopologyBuilder b = new TopologyBuilder();
 
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				cluster.killTopology(TOPOLOGY_NAME);
-				cluster.shutdown();
-			}
-		});
+    b.setSpout("TwitterSpout", new TwitterSpout());
 
-	}
+    b.setBolt("FilterTweetsBolt", new FilterTweetsBolt()).shuffleGrouping("TwitterSpout");
+
+    b.setBolt("PositiveTweetFilterBolt", new PositiveTweetFilterBolt())
+        .allGrouping("FilterTweetsBolt");
+
+    b.setBolt("NegativeTweetFilterBolt", new NegativeTweetFilterBolt())
+        .allGrouping("FilterTweetsBolt");
+
+    b.setBolt("ScoreSentimentalBolt", new ScoreSentimentBolt())
+        .fieldsGrouping("PositiveTweetFilterBolt", new Fields(Utilities.TWITTER_ID_FIELD))
+        .fieldsGrouping("NegativeTweetFilterBolt", new Fields(Utilities.TWITTER_ID_FIELD));
+
+    final LocalCluster cluster = new LocalCluster();
+
+    // Submit Topology
+    cluster.submitTopology(TOPOLOGY_NAME, config, b.createTopology());
+
+    // Shutdown cluster when kill Executor-Task
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      @Override
+      public void run() {
+        cluster.killTopology(TOPOLOGY_NAME);
+        cluster.shutdown();
+      }
+    });
+
+  }
 
 }
