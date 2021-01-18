@@ -19,36 +19,41 @@ import java.util.Set;
  */
 public class FilterTweetsBolt extends BaseRichBolt {
 
-	/**
-	 * PRIVATE ATRIBUTES
-	 */
+  /**
+   * PRIVATE ATRIBUTES
+   */
 
-	private static final long serialVersionUID = 5151173513759399636L;
+  private static final long serialVersionUID = 5151173513759399636L;
 
-	private OutputCollector collector;
+  private OutputCollector collector;
 
-	/**
-	 * BOLT OVERRIDE METHODS
-	 */
+  /**
+   * BOLT OVERRIDE METHODS
+   */
 
-	@Override
-	public void prepare(Map map, TopologyContext topologyContext, OutputCollector collector) {
-		this.collector = collector;
-	}
+  @Override
+  public void prepare(Map map, TopologyContext topologyContext, OutputCollector collector) {
+    this.collector = collector;
+  }
 
-	@Override
-	public void execute(Tuple input) {
-		Status tweet = (Status) input.getValueByField(Utilities.TWITTER_LIST_FIELD);
+  @Override
+  public void execute(Tuple input) {
+    Status tweet = (Status) input.getValueByField(Utilities.TWITTER_LIST_FIELD);
 
-		String text = tweet.getText().replaceAll("\\p{Punct}", " ").replaceAll("\\r|\\n", "").toLowerCase();
+    String text =
+        tweet.getText().replaceAll("\\p{Punct}", Utilities.BLANK_SPACE_DELIMITED).replaceAll("\\r|\\n", "").toLowerCase();
 
-		// TODO: Remember change in the other side
-		collector.emit(new Values(text));
-	}
+    for (String word : Utilities.STOP_WORDS) {
 
-	@Override
-	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		// TODO: Remember to change in the topology
-		declarer.declare(new Fields(Utilities.TWITTER_TEXT_FIELD));
-	}
+      text = text.replaceAll("\\b" + word.toLowerCase() + "\\b", "");
+    }
+
+    collector.emit(new Values(String.valueOf(tweet.getId()), text, tweet.getSource()));
+  }
+
+  @Override
+  public void declareOutputFields(OutputFieldsDeclarer declarer) {
+    declarer.declare(new Fields(Utilities.TWITTER_ID_FIELD, Utilities.TWITTER_TEXT_FIELD,
+        Utilities.TWITTER_SOURCE_FIELD));
+  }
 }
