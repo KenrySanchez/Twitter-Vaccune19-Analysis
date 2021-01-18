@@ -35,7 +35,6 @@ public class PositiveTweetFilterBolt extends BaseRichBolt {
 
     String text = (String) input.getValueByField(Utilities.TWITTER_TEXT_FIELD);
     String id = (String) input.getValueByField(Utilities.TWITTER_ID_FIELD);
-    String source = (String) input.getValueByField(Utilities.TWITTER_SOURCE_FIELD);
 
     int sentimentScore = 0;
 
@@ -47,15 +46,14 @@ public class PositiveTweetFilterBolt extends BaseRichBolt {
       }
 
     }
-
-    collector.emit(new Values(id, sentimentScore, source));
+    
+    collector.emit(new Values(id, sentimentScore));
 
   }
 
   @Override
   public void declareOutputFields(OutputFieldsDeclarer declarer) {
-    declarer.declare(new Fields(Utilities.TWITTER_ID_FIELD, Utilities.TWITTER_SCORE_FIELD,
-        Utilities.TWITTER_SOURCE_FIELD));
+    declarer.declare(new Fields(Utilities.TWITTER_ID_FIELD, Utilities.TWITTER_SCORE_FIELD));
   }
 
 }

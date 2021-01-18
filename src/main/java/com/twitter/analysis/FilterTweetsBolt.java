@@ -40,20 +40,19 @@ public class FilterTweetsBolt extends BaseRichBolt {
   public void execute(Tuple input) {
     Status tweet = (Status) input.getValueByField(Utilities.TWITTER_LIST_FIELD);
 
-    String text =
-        tweet.getText().replaceAll("\\p{Punct}", Utilities.BLANK_SPACE_DELIMITED).replaceAll("\\r|\\n", "").toLowerCase();
+    String text = tweet.getText().replaceAll("\\p{Punct}", Utilities.BLANK_SPACE_DELIMITED)
+        .replaceAll("\\r|\\n", "").toLowerCase();
 
     for (String word : Utilities.STOP_WORDS) {
 
       text = text.replaceAll("\\b" + word.toLowerCase() + "\\b", "");
     }
 
-    collector.emit(new Values(String.valueOf(tweet.getId()), text, tweet.getSource()));
+    collector.emit(new Values(String.valueOf(tweet.getId()), text));
   }
 
   @Override
   public void declareOutputFields(OutputFieldsDeclarer declarer) {
-    declarer.declare(new Fields(Utilities.TWITTER_ID_FIELD, Utilities.TWITTER_TEXT_FIELD,
-        Utilities.TWITTER_SOURCE_FIELD));
+    declarer.declare(new Fields(Utilities.TWITTER_ID_FIELD, Utilities.TWITTER_TEXT_FIELD));
   }
 }

@@ -35,7 +35,6 @@ public class NegativeTweetFilterBolt extends BaseRichBolt {
 
     String text = (String) input.getValueByField(Utilities.TWITTER_TEXT_FIELD);
     String id = (String) input.getValueByField(Utilities.TWITTER_ID_FIELD);
-    String source = (String) input.getValueByField(Utilities.TWITTER_SOURCE_FIELD);
 
     int sentimentScore = 0;
 
@@ -43,19 +42,18 @@ public class NegativeTweetFilterBolt extends BaseRichBolt {
     for (String word : words) {
 
       if (Utilities.NEGATIVE_WORDS.contains(word)) {
-        sentimentScore += 1;
+        sentimentScore -= 1;
       }
 
     }
-
-    collector.emit(new Values(id, sentimentScore, source));
+    
+    collector.emit(new Values(id, sentimentScore));
 
   }
 
   @Override
   public void declareOutputFields(OutputFieldsDeclarer declarer) {
-    declarer.declare(new Fields(Utilities.TWITTER_ID_FIELD, Utilities.TWITTER_SCORE_FIELD,
-        Utilities.TWITTER_SOURCE_FIELD));
+    declarer.declare(new Fields(Utilities.TWITTER_ID_FIELD, Utilities.TWITTER_SCORE_FIELD));
   }
 
 }

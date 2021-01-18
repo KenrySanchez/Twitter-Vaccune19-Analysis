@@ -3,6 +3,9 @@ package com.twitter.analysis;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
+
+import org.apache.commons.io.IOUtils;
 
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
