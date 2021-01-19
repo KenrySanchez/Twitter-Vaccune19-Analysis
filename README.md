@@ -4,7 +4,7 @@ Twitter Analysis to understand people opinions about covid-19 vaccune.
 
 ## TWITTER API CONNECTION
 
-1. At the Root folder, there is a `twitter4j.properties` with the credentials.
+1. At the Root folder, there is a `twitter4j.properties` file with the credentials.
 
 - `oauth.consumerKey`: Twitter API key.
 - `oauth.consumerSecret`: Twitter API key secret.
