@@ -12,6 +12,7 @@ public class Utilities {
 
   public static final String TWITTER_LIST_FIELD = "tweets";
   public static final String TWITTER_TEXT_FIELD = "text_tweet";
+  public static final String TWITTER_ORIGINAL_FIELD = "original_tweet";
   public static final String TWITTER_ID_FIELD = "id_tweet";
   public static final String TWITTER_SCORE_FIELD = "score_tweet";
   

@@ -40,6 +40,8 @@ public class ScoreSentimentBolt extends BaseRichBolt {
     String id = (String) input.getValueByField(Utilities.TWITTER_ID_FIELD);
     Integer score = (Integer) input.getValueByField(Utilities.TWITTER_SCORE_FIELD);
 
+    String original = (String) input.getValueByField(Utilities.TWITTER_ORIGINAL_FIELD);
+
     Integer sentimentScore = sentimentScoreCounter.get(id);
 
     if (sentimentScore == null) {
@@ -51,9 +53,10 @@ public class ScoreSentimentBolt extends BaseRichBolt {
 
       final int finalScore = (sentimentScore + score);
 
-      logger.info(new StringBuilder("mention - ").append("----NA-----").append(" :: score - ")
-          .append(finalScore).toString());
+      String finalWord = finalScore >= 1 ? "POSITIVE" : finalScore <= -1 ? "NEGATIVE" : "NA";
 
+      logger.info(new StringBuilder("TWEET: ").append(original).append("- " + finalWord)
+          .append(" -- SCORE: ").append(finalScore).toString());
     }
 
   }
@@ -61,7 +64,6 @@ public class ScoreSentimentBolt extends BaseRichBolt {
   @Override
   public void declareOutputFields(OutputFieldsDeclarer declarer) {
     // TODO Auto-generated method stub
-
   }
 
 }
