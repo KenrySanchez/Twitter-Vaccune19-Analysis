@@ -1,14 +1,6 @@
 package com.twitter.analysis;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-
-import org.apache.commons.io.IOUtils;
-
-import com.google.common.io.ByteStreams;
-import com.google.common.io.CharStreams;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
@@ -17,13 +9,14 @@ import backtype.storm.tuple.Fields;
 
 public class Topology {
 
-  static final String TOPOLOGY_NAME = "twitter-vaccune19-analysis";
+  static final String TOPOLOGY_NAME = "twitter-vaccune19-score-analysis";
 
   public static void main(String[] args) throws IOException {
 
-    // Set config message. TODO: Look for improviment
+    // Set config message.
     Config config = new Config();
-    config.setMessageTimeoutSecs(120);
+    
+    config.setMessageTimeoutSecs(180);
 
     // Build Storm Topology
     TopologyBuilder b = new TopologyBuilder();
@@ -42,7 +35,9 @@ public class Topology {
         .fieldsGrouping("PositiveTweetFilterBolt", new Fields(Utilities.TWITTER_ID_FIELD))
         .fieldsGrouping("NegativeTweetFilterBolt", new Fields(Utilities.TWITTER_ID_FIELD));
 
+    //Init cluster as standalone
     final LocalCluster cluster = new LocalCluster();
+    
 
     // Submit Topology
     cluster.submitTopology(TOPOLOGY_NAME, config, b.createTopology());

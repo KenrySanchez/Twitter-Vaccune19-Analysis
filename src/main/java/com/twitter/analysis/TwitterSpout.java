@@ -98,15 +98,6 @@ public class TwitterSpout extends BaseRichSpout {
 	}
 
 	@Override
-	public Map<String, Object> getComponentConfiguration() {
-		Config ret = new Config();
-
-		// Used for local mode - TODO: Optimize
-		ret.setMaxTaskParallelism(1);
-		return ret;
-	}
-
-	@Override
 	public void ack(Object id) {
 	}
 

@@ -7,12 +7,9 @@ import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
-import twitter4j.HashtagEntity;
 import twitter4j.Status;
-import twitter4j.UserMentionEntity;
 
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Receives tweets and emits its words over a certain length.
@@ -43,16 +40,19 @@ public class FilterTweetsBolt extends BaseRichBolt {
     String text = tweet.getText().replaceAll("\\p{Punct}", Utilities.BLANK_SPACE_DELIMITED)
         .replaceAll("\\r|\\n", "").toLowerCase();
 
+    String originalText = tweet.getText();
+
     for (String word : Utilities.STOP_WORDS) {
 
       text = text.replaceAll("\\b" + word.toLowerCase() + "\\b", "");
     }
 
-    collector.emit(new Values(String.valueOf(tweet.getId()), text));
+    collector.emit(new Values(String.valueOf(tweet.getId()), text, originalText));
   }
 
   @Override
   public void declareOutputFields(OutputFieldsDeclarer declarer) {
-    declarer.declare(new Fields(Utilities.TWITTER_ID_FIELD, Utilities.TWITTER_TEXT_FIELD));
+    declarer.declare(new Fields(Utilities.TWITTER_ID_FIELD, Utilities.TWITTER_TEXT_FIELD,
+        Utilities.TWITTER_ORIGINAL_FIELD));
   }
 }
