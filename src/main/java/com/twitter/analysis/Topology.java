@@ -38,7 +38,6 @@ public class Topology {
     //Init cluster as standalone
     final LocalCluster cluster = new LocalCluster();
     
-
     // Submit Topology
     cluster.submitTopology(TOPOLOGY_NAME, config, b.createTopology());
 

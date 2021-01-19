@@ -41,6 +41,7 @@ public class TwitterSpout extends BaseRichSpout {
 		queue = new LinkedBlockingQueue<Status>(1000);
 		this.collector = collector;
 
+		//Twitter Listener Stream API
 		StatusListener listener = new StatusListener() {
 			@Override
 			public void onStatus(Status status) {
@@ -74,9 +75,12 @@ public class TwitterSpout extends BaseRichSpout {
 		twitterStream = factory.getInstance();
 		
 		FilterQuery query = new FilterQuery();
+		
+		//Query by hashtags and Language
 		query.track(new String[]{ "#COVID19", "#Vaccine", "#COVIDVaccine" });
 		query.language(new String[] {"en"});
 		
+		//load listener and start filtering
 		twitterStream.addListener(listener);
 		twitterStream.filter(query);
 	}

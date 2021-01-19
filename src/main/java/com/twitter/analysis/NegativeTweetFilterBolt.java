@@ -17,7 +17,6 @@ public class NegativeTweetFilterBolt extends BaseRichBolt {
    */
 
   private static final long serialVersionUID = 1L;
-
   private OutputCollector collector;
 
   /**
@@ -33,13 +32,15 @@ public class NegativeTweetFilterBolt extends BaseRichBolt {
   @Override
   public void execute(Tuple input) {
 
+    //get tweet properties
     String text = (String) input.getValueByField(Utilities.TWITTER_TEXT_FIELD);
     String id = (String) input.getValueByField(Utilities.TWITTER_ID_FIELD);
-
     String original = (String) input.getValueByField(Utilities.TWITTER_ORIGINAL_FIELD);
 
+    //initializing score
     int sentimentScore = 0;
 
+    //split by blank space and count words
     String[] words = text.split(Utilities.BLANK_SPACE_DELIMITED);
     for (String word : words) {
 
@@ -49,6 +50,7 @@ public class NegativeTweetFilterBolt extends BaseRichBolt {
 
     }
 
+    //emit value fields
     collector.emit(new Values(id, sentimentScore, original));
 
   }

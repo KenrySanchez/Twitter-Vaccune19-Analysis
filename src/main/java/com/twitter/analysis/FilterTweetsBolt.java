@@ -21,7 +21,6 @@ public class FilterTweetsBolt extends BaseRichBolt {
    */
 
   private static final long serialVersionUID = 5151173513759399636L;
-
   private OutputCollector collector;
 
   /**
@@ -35,18 +34,24 @@ public class FilterTweetsBolt extends BaseRichBolt {
 
   @Override
   public void execute(Tuple input) {
+    
+    //get tweet status object
     Status tweet = (Status) input.getValueByField(Utilities.TWITTER_LIST_FIELD);
 
+    //get text tweet
     String text = tweet.getText().replaceAll("\\p{Punct}", Utilities.BLANK_SPACE_DELIMITED)
         .replaceAll("\\r|\\n", "").toLowerCase();
 
+    //text tweet copy - for back up
     String originalText = tweet.getText();
 
+    //filter Stop Words
     for (String word : Utilities.STOP_WORDS) {
 
       text = text.replaceAll("\\b" + word.toLowerCase() + "\\b", "");
     }
 
+    //emit value fields
     collector.emit(new Values(String.valueOf(tweet.getId()), text, originalText));
   }
 

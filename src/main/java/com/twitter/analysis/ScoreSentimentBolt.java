@@ -19,9 +19,7 @@ public class ScoreSentimentBolt extends BaseRichBolt {
    */
 
   private static final long serialVersionUID = 1L;
-
   private Map<String, Integer> sentimentScoreCounter;
-
   private static final Logger logger = LoggerFactory.getLogger(ScoreSentimentBolt.class);
 
   /**
@@ -37,13 +35,15 @@ public class ScoreSentimentBolt extends BaseRichBolt {
   @Override
   public void execute(Tuple input) {
 
+    //get tweet properties
     String id = (String) input.getValueByField(Utilities.TWITTER_ID_FIELD);
     Integer score = (Integer) input.getValueByField(Utilities.TWITTER_SCORE_FIELD);
-
     String original = (String) input.getValueByField(Utilities.TWITTER_ORIGINAL_FIELD);
 
+    //get sentimental count if exist
     Integer sentimentScore = sentimentScoreCounter.get(id);
 
+    //define if the tweet is positive or negative
     if (sentimentScore == null) {
 
       sentimentScore = score;
@@ -55,6 +55,7 @@ public class ScoreSentimentBolt extends BaseRichBolt {
 
       String finalWord = finalScore >= 1 ? "POSITIVE" : finalScore <= -1 ? "NEGATIVE" : "NA";
 
+      //track logger. In distributed mode, log can be watch it at /var/log/storm/
       logger.info(new StringBuilder("TWEET: ").append(original).append("- " + finalWord)
           .append(" -- SCORE: ").append(finalScore).toString());
     }
