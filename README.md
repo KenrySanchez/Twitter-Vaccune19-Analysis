@@ -2,7 +2,7 @@
 
 Twitter Analysis to understand people opinions about covid-19 vaccune.
 
-## TWITTER API CONNECTION
+## Twitter API Connection
 
 1. At the Root folder, there is a `twitter4j.properties` file with the credentials.
 
@@ -13,7 +13,7 @@ Twitter Analysis to understand people opinions about covid-19 vaccune.
 
 We can change these credentials in order to `connect with other Twitter API Account`.
 
-## STANDALONE DEPLOYMENT INSTRUCTIONS
+## Standalone Deployment Instructions
 
 1. Have Maven installed `version > 1.8`.
 2. Run `mvn clean install`.
